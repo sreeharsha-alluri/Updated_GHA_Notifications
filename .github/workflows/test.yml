@@ -40,18 +40,16 @@ jobs:
     needs: [build, test]
 
     steps:
-      - name: Check Status
+      - name: Set Overall Status
+        id: set_overall_status
         run: |
           if grep -q "build_status=failure" $GITHUB_STATE || grep -q "test_status=failure" $GITHUB_STATE; then
             echo "overall_status=failure" >> $GITHUB_STATE
           else
             echo "overall_status=success" >> $GITHUB_STATE
-      
-      - name: Print Overall Status
-        run: |
-          overall_status=$(grep -oP '^overall_status=\K\w+' $GITHUB_STATE | tail -n 1)
-          if [ "$overall_status" == "success" ]; then
-            echo "Overall Status: pass"
-          else
-            echo "Overall Status: fail"
           fi
+      
+      - name: Load Overall Status
+        run: |
+          source $GITHUB_STATE
+          echo "Overall Status: $overall_status"
