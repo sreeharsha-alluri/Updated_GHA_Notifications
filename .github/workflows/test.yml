@@ -48,8 +48,9 @@ jobs:
           else
             echo "overall_status=success" >> $GITHUB_STATE
           fi
-      
+
       - name: Load Overall Status
         run: |
-          source $GITHUB_STATE
+          content=$(cat $GITHUB_STATE)
+          overall_status=$(echo "$content" | grep -oP '^overall_status=\K\w+')
           echo "Overall Status: $overall_status"
