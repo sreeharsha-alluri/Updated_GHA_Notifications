@@ -17,9 +17,9 @@ jobs:
     - name: Build
       run: echo "Building..."
     
-    - name: Set status
+    - name: Save status
       if: always()
-      run: echo "::set-output name=status::${{ job.status }}"
+      run: echo "build_status=${{ job.status }}" >> $GITHUB_STATE
 
   test:
     name: Test
@@ -30,6 +30,6 @@ jobs:
     - name: Test
       run: echo "Testing..."
     
-    - name: Set status
+    - name: Save status
       if: always()
-      run: echo "::set-output name=status::${{ job.status }}"
+      run: echo "test_status=${{ job.status }}" >> $GITHUB_STATE
