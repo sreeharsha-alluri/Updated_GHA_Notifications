@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Build
-        run: echo "Building..."
+        run: echo "Building"
       
       - name: Save build status
         if: always()
@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Test
-        run: echo "Testing..."
+        run: echo "Testing"
       
       - name: Save test status
         if: always()
