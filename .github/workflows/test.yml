@@ -48,8 +48,8 @@ jobs:
       - name: Set Overall Status
         id: set_overall_status
         run: |
-          build_status=$(grep -oP '^var2=\K\w+' $GITHUB_STATE)
-          test_status=$(grep -oP '^var1=\K\w+' $GITHUB_STATE)
+          build_status=$(echo "${{ needs.build.outputs.var2 }}")
+          test_status=$(echo "${{ needs.test.outputs.var1 }}")
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
           else
