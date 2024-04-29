@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Build
-      run: echo "Building..."
-    
-    - name: Save build status
-      if: always()
-      run: echo "build_status=${{ job.status }}" >> $GITHUB_STATE
+      - name: Build
+        run: echo "Building..."
+      
+      - name: Save build status
+        if: always()
+        run: echo "build_status=${{ job.status }}" >> $GITHUB_STATE
 
   test:
     name: Test
@@ -27,12 +27,12 @@ jobs:
     needs: build
 
     steps:
-    - name: Test
-      run: echo "Testing..."
-    
-    - name: Save test status
-      if: always()
-      run: echo "test_status=${{ job.status }}" >> $GITHUB_STATE
+      - name: Test
+        run: echo "Testing..."
+      
+      - name: Save test status
+        if: always()
+        run: echo "test_status=${{ job.status }}" >> $GITHUB_STATE
 
   overall_status:
     name: Determine Overall Status
@@ -40,18 +40,18 @@ jobs:
     needs: [build, test]
 
     steps:
-    - name: Check Status
-      run: |
-        if grep -q "build_status=failure" $GITHUB_STATE || grep -q "test_status=failure" $GITHUB_STATE; then
-          echo "overall_status=failure" >> $GITHUB_STATE
-        else
-          echo "overall_status=success" >> $GITHUB_STATE
-
-    - name: Print Overall Status
-      run: |
-        overall_status=$(grep -oP 'overall_status=\K\w+' $GITHUB_STATE | tail -n 1)
-        if [ "$overall_status" == "success" ]; then
-          echo "Overall Status: pass"
-        else
-          echo "Overall Status: fail"
-        fi
+      - name: Check Status
+        run: |
+          if grep -q "build_status=failure" $GITHUB_STATE || grep -q "test_status=failure" $GITHUB_STATE; then
+            echo "overall_status=failure" >> $GITHUB_STATE
+          else
+            echo "overall_status=success" >> $GITHUB_STATE
+      
+      - name: Print Overall Status
+        run: |
+          overall_status=$(grep -oP 'overall_status=\K\w+' $GITHUB_STATE | tail -n 1)
+          if [ "$overall_status" == "success" ]; then
+            echo "Overall Status: pass"
+          else
+            echo "Overall Status: fail"
+          fi
