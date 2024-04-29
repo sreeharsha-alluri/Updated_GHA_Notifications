@@ -40,16 +40,22 @@ runs:
     - name: Determine job status
       shell: bash
       run: |
-        if [[ "${{ job.status }}" == "failure" ]]; then
-          echo "STATUS=FAIL" >> $GITHUB_ENV
+        # Extract overall status from input
+        STATUS="${{ inputs.overall-status }}"
+        
+        # Determine the color and mentioned ID/Name based on status
+        if [ "$STATUS" == "FAIL" ]; then
+          status="FAIL ❌"
+          color="attention"
+          mentionedId="$ERROR_MENTION_ID"
+          mentionedName="$ERROR_MENTION_NAME"
         else
-          echo "STATUS=PASS" >> $GITHUB_ENV
+          status="PASS ✅"
+          color="good"
+          mentionedId="$SUCCESS_MENTION_ID"
+          mentionedName="$SUCCESS_MENTION_NAME"
         fi
 
-    - name: Send notification to Microsoft Teams
-      shell: bash
-      if: always()
-      run: |
         # Get the GitHub workflow run URL
         JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         
@@ -64,22 +70,6 @@ runs:
         
         # Get the build number
         BUILD_NUMBER="${{ github.run_number }}"
-        
-        # Determine the job status from environment variables
-        STATUS=$STATUS
-        
-        # Determine the color and mentioned ID/Name based on status
-        if [ "$STATUS" == "FAIL" ]; then
-          status="FAIL ❌"
-          color="attention"
-          mentionedId="$ERROR_MENTION_ID"
-          mentionedName="$ERROR_MENTION_NAME"
-        else
-          status="PASS ✅"
-          color="good"
-          mentionedId="$SUCCESS_MENTION_ID"
-          mentionedName="$SUCCESS_MENTION_NAME"
-        fi
         
         # Generate the payload for the notification
         payload='{
