@@ -1,6 +1,5 @@
 name: Build and Test
 
-
 on:
   push:
     branches:
@@ -51,8 +50,8 @@ jobs:
           test_status=$(grep -oP 'test_status=\K\w+' $GITHUB_STATE)
           echo "Build Status: $build_status"
           echo "Test Status: $test_status"
-          if grep -q "build_status=failure" $GITHUB_STATE || grep -q "test_status=failure" $GITHUB_STATE; then
-            echo "Overall Status: fail"
-          else
+          if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
+          else
+            echo "Overall Status: fail"
           fi
