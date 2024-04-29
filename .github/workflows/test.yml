@@ -18,11 +18,8 @@ jobs:
       run: echo "Building..."
     
     - name: Set status
-      if: failure()
-      run: echo "::set-output name=status::failure"
-    - name: Set status
-      if: success()
-      run: echo "::set-output name=status::success"
+      if: always()
+      run: echo "::set-output name=status::${{ job.status }}"
 
   test:
     name: Test
@@ -34,8 +31,5 @@ jobs:
       run: echo "Testing..."
     
     - name: Set status
-      if: failure()
-      run: echo "::set-output name=status::failure"
-    - name: Set status
-      if: success()
-      run: echo "::set-output name=status::success"
+      if: always()
+      run: echo "::set-output name=status::${{ job.status }}"
