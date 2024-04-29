@@ -58,9 +58,8 @@ jobs:
           fi
 
       - name: Run the Composite Action
-        runs-on: ubuntu-latest  # Ensure consistency with other steps
         if: always()
         needs: [set_overall_status]
-        uses: ./.github/actions/build_and_notify  # Double-check the path
+        uses: ./.github/actions/build_and_notify
         with:
           action-name: ${{ github.workflow }}
