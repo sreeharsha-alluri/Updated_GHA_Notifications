@@ -75,9 +75,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       
-      - name: Debug Overall Status
-        run: echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}"
-      
       - uses: ./.github/actions/build_and_notify
         with:
           action-name: ${{ github.workflow }}
