@@ -46,14 +46,12 @@ jobs:
           echo "overall_status=failure" >> $GITHUB_STATE
         else
           echo "overall_status=success" >> $GITHUB_STATE
-        fi
 
     - name: Print Overall Status
       run: |
         overall_status=$(grep -oP 'overall_status=\K\w+' $GITHUB_STATE | tail -n 1)
         if [ "$overall_status" == "success" ]; then
-         echo "Overall Status: pass"
+          echo "Overall Status: pass"
         else
           echo "Overall Status: fail"
         fi
-
