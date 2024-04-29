@@ -18,8 +18,9 @@ jobs:
         run: echo "Building..."
       
       - name: Save build status
+        id: save_build_status
         if: always()
-        run: echo "build_status=${{ job.status }}" >> $GITHUB_STATE
+        run: echo "::set-output name=build_status::${{ job.status }}"
 
   test:
     name: Test
@@ -31,8 +32,9 @@ jobs:
         run: echo "Testing..."
       
       - name: Save test status
+        id: save_test_status
         if: always()
-        run: echo "test_status=${{ job.status }}" >> $GITHUB_STATE
+        run: echo "::set-output name=test_status::${{ job.status }}"
 
   overall_status:
     name: Determine Overall Status
@@ -40,16 +42,12 @@ jobs:
     needs: [build, test]
 
     steps:
-      - name: Set Overall Status
-        id: set_overall_status
+      - name: Check Status
         run: |
-          if grep -q "build_status=failure" $GITHUB_STATE || grep -q "test_status=failure" $GITHUB_STATE; then
-            echo "overall_status=failure" >> $GITHUB_STATE
+          build_status=$(echo "${{ needs.build.outputs.build_status }}")
+          test_status=$(echo "${{ needs.test.outputs.test_status }}")
+          if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
+            echo "Overall Status: pass"
           else
-            echo "overall_status=success" >> $GITHUB_STATE
+            echo "Overall Status: fail"
           fi
-
-      - name: Load Overall Status
-        run: |
-          overall_status=$(grep -oP '^overall_status=\K\w+' $GITHUB_STATE)
-          echo "Overall Status: $overall_status"
