@@ -28,7 +28,9 @@ jobs:
 
     steps:
       - name: Test
-        run: echo "Testing..."
+        run: |
+          echo "Simulating test failure..."
+          exit 1
       
       - name: Save test status
         if: always()
