@@ -1,0 +1,41 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Build
+      run: echo "Building..."
+    
+    - name: Set status
+      if: failure()
+      run: echo "::set-output name=status::failure"
+    - name: Set status
+      if: success()
+      run: echo "::set-output name=status::success"
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Test
+      run: echo "Testing..."
+    
+    - name: Set status
+      if: failure()
+      run: echo "::set-output name=status::failure"
+    - name: Set status
+      if: success()
+      run: echo "::set-output name=status::success"
