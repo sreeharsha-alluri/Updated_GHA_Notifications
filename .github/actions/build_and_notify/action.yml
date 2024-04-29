@@ -39,12 +39,12 @@ runs:
     - name: Determine job status
       shell: bash
       run: |
-        # Extract overall status from input
-        STATUS="${{ steps.set_overall_status.outputs.overall-status }}"
+        # Read overall status from status.txt
+        STATUS=$(grep -Po 'Overall Status: *\K[^"]*' status.txt)
         echo "Overall Status: $STATUS"
         
         # Determine the color and mentioned ID/Name based on status
-        if [ "$STATUS" == "FAIL" ]; then
+        if [ "$STATUS" == "fail" ]; then
           status="FAIL ❌"
           color="attention"
           mentionedId="$ERROR_MENTION_ID"
@@ -138,4 +138,4 @@ runs:
         }'
         
         # Send the payload to Microsoft Teams
-        echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
+        echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'```
