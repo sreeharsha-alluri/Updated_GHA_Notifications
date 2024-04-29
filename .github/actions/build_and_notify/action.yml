@@ -40,7 +40,7 @@ runs:
       shell: bash
       run: |
         # Extract overall status from input
-        STATUS="${{ inputs.overall-status }}"
+        STATUS="${{ steps.set_overall_status.outputs.overall-status }}"
         echo "Overall Status: $STATUS"
         
         # Determine the color and mentioned ID/Name based on status
