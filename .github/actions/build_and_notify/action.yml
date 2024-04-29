@@ -5,6 +5,9 @@ inputs:
     description: 'Name for the action'
     required: true
     default: 'Composite Action' # Provide a default value if needed
+  overall-status:
+    description: 'Overall status of the workflow'
+    required: true
 
 runs:
   using: 'composite'
