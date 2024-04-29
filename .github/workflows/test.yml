@@ -51,6 +51,5 @@ jobs:
 
       - name: Load Overall Status
         run: |
-          content=$(cat $GITHUB_STATE)
-          overall_status=$(echo "$content" | grep -oP '^overall_status=\K\w+')
+          overall_status=$(grep -oP '^overall_status=\K\w+' $GITHUB_STATE)
           echo "Overall Status: $overall_status"
