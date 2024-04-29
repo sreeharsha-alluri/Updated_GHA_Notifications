@@ -65,7 +65,6 @@ jobs:
           else
             echo "Overall Status: fail"
             echo "::set-output name=overall-status::fail" # Set overall status as an output
-          
 
   run_composite_action:
     name: Run the Composite Action
@@ -75,6 +74,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      
+      - name: Debug Overall Status
+        run: echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}"
       
       - uses: ./.github/actions/build_and_notify
         with:
