@@ -43,7 +43,16 @@ jobs:
     - name: Check Status
       run: |
         if grep -q "build_status=failure" $GITHUB_STATE || grep -q "test_status=failure" $GITHUB_STATE; then
-          echo "::set-output name=overall_status::failure"
+          echo "overall_status=failure" >> $GITHUB_STATE
         else
-          echo "::set-output name=overall_status::success"
+          echo "overall_status=success" >> $GITHUB_STATE
+        fi
+
+    - name: Print Overall Status
+      run: |
+        overall_status=$(grep -oP 'overall_status=\K\w+' $GITHUB_STATE)
+        if [ "$overall_status" == "success" ]; then
+          echo "Overall Status: pass"
+        else
+          echo "Overall Status: fail"
         fi
