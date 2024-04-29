@@ -49,5 +49,4 @@ jobs:
             echo "Overall Status: pass"
           fi
 
-      - name: Append Overall Status
-        run: echo "${{ steps.check_status.outputs.result }}" >> $GITHUB_STATE
+    
