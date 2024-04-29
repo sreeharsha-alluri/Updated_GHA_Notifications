@@ -50,7 +50,7 @@ jobs:
       
       - name: Print Overall Status
         run: |
-          overall_status=$(grep -oP 'overall_status=\K\w+' $GITHUB_STATE | tail -n 1)
+          overall_status=$(grep -oP '^overall_status=\K\w+$' $GITHUB_STATE)
           if [ "$overall_status" == "success" ]; then
             echo "Overall Status: pass"
           else
