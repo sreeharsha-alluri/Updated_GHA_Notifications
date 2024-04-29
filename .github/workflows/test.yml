@@ -46,7 +46,6 @@ jobs:
             echo "overall_status=failure" >> $GITHUB_STATE
           else
             echo "overall_status=success" >> $GITHUB_STATE
-          fi
       
       - name: Print Overall Status
         run: |
