@@ -49,9 +49,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, test]
     if: always()
-
     outputs:
-      overall-status: ${{ steps.set_overall_status.outputs.overall-status }} # Define overall-status as an output
+      overall-status: ${{ needs.overall_status.outputs.overall-status }} # Pass overall status as an output
 
     steps:
       - name: Set Overall Status
@@ -61,6 +60,20 @@ jobs:
           test_status=$(echo "${{ needs.test.outputs.var1 }}")
           # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
-            echo "::set-output name=overall-status::pass" # Set overall status as an output
+            echo "Overall Status: pass"
           else
-            echo "::set-output name=overall-status::fail" # Set overall status as an output
+            echo "Overall Status: fail"
+          fi
+  run_composite_action:
+    name: Run the Composite Action
+    if: always()
+    needs: [overall_status]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - uses: ./.github/actions/build_and_notify
+        with:
+          action-name: ${{ github.workflow }}
+          overall-status: ${{ needs.overall_status.outputs.overall-status }}
