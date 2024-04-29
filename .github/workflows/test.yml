@@ -19,9 +19,7 @@ jobs:
       
       - name: Save build status
         if: always()
-        run: |
-          build_status="${{ job.status }}"
-          echo "build_status=$build_status" >> $GITHUB_STATE
+        run: echo "build_status=${{ job.status }}" >> $GITHUB_STATE
 
   test:
     name: Test
@@ -36,9 +34,7 @@ jobs:
       
       - name: Save test status
         if: always()
-        run: |
-          test_status="${{ job.status }}"
-          echo "test_status=$test_status" >> $GITHUB_STATE
+        run: echo "test_status=${{ job.status }}" >> $GITHUB_STATE
 
   overall_status:
     name: Determine Overall Status
@@ -47,7 +43,7 @@ jobs:
     if: always()
 
     steps:
-      - name: Check Status
+      - name: Determine Overall Status
         run: |
           build_status=$(grep -oP 'build_status=\K\w+' $GITHUB_STATE)
           test_status=$(grep -oP 'test_status=\K\w+' $GITHUB_STATE)
