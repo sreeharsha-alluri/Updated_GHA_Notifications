@@ -57,9 +57,12 @@ jobs:
             echo "Overall Status: fail"
           fi
 
-      - name: Run the Composite Action
-        if: always()
-        needs: [set_overall_status]
-        uses: ./.github/actions/build_and_notify
+  run_composite_action:
+    name: Run the Composite Action
+    if: always()
+    needs: [overall_status]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/build_and_notify
         with:
           action-name: ${{ github.workflow }}
