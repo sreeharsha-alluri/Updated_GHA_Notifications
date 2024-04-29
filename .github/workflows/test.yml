@@ -50,8 +50,17 @@ jobs:
         run: |
           build_status=$(echo "${{ needs.build.outputs.var2 }}")
           test_status=$(echo "${{ needs.test.outputs.var1 }}")
+          # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
           else
             echo "Overall Status: fail"
           fi
+
+      - name: Run the Composite Action
+        runs-on: ubuntu-latest  # Ensure consistency with other steps
+        if: always()
+        needs: [set_overall_status]
+        uses: ./.github/actions/build_and_notify  # Double-check the path
+        with:
+          action-name: ${{ github.workflow }}
