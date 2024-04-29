@@ -18,6 +18,7 @@ jobs:
         run: echo "Building..."
       
       - name: Save build status
+        id: save_build_status
         if: always()
         run: echo "var2=${{ job.status }}" >> $GITHUB_STATE
 
@@ -33,6 +34,7 @@ jobs:
           exit 1
       
       - name: Save test status
+        id: save_test_status
         if: always()
         run: echo "var1=${{ job.status }}" >> $GITHUB_STATE
 
@@ -46,8 +48,8 @@ jobs:
       - name: Set Overall Status
         id: set_overall_status
         run: |
-          build_status=$(grep -oP 'var2=\K\w+' $GITHUB_STATE)
-          test_status=$(grep -oP 'var1=\K\w+' $GITHUB_STATE)
+          build_status=$(grep -oP '^var2=\K\w+' $GITHUB_STATE)
+          test_status=$(grep -oP '^var1=\K\w+' $GITHUB_STATE)
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
           else
