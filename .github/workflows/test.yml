@@ -46,6 +46,10 @@ jobs:
       - name: Check Status
         id: check_status
         run: |
+          build_status=$(grep -oP 'build_status=\K\w+' $GITHUB_STATE)
+          test_status=$(grep -oP 'test_status=\K\w+' $GITHUB_STATE)
+          echo "Build Status: $build_status"
+          echo "Test Status: $test_status"
           if grep -q "build_status=failure" $GITHUB_STATE || grep -q "test_status=failure" $GITHUB_STATE; then
             echo "Overall Status: fail"
           else
