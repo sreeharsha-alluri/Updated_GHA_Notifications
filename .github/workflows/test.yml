@@ -18,8 +18,9 @@ jobs:
         run: echo "Building..."
       
       - name: Save build status
+        id: save_build_status
         if: always()
-        run: echo "build_status=${{ job.status }}" >> $GITHUB_STATE
+        run: echo "::set-output name=var2::${{ job.status }}"
 
   test:
     name: Test
@@ -29,12 +30,13 @@ jobs:
     steps:
       - name: Test
         run: |
-         echo "Testing..."
-         exit 1
+          echo "Testing..."
+          exit 1
       
       - name: Save test status
+        id: save_test_status
         if: always()
-        run: echo "test_status=${{ job.status }}" >> $GITHUB_STATE
+        run: echo "::set-output name=var1::${{ job.status }}"
 
   overall_status:
     name: Determine Overall Status
@@ -43,13 +45,11 @@ jobs:
     if: always()
 
     steps:
-      - name: Check Status
-        id: check_status
+      - name: Set Overall Status
+        id: set_overall_status
         run: |
-          build_status=$(grep -oP 'build_status=\K\w+' $GITHUB_STATE)
-          test_status=$(grep -oP 'test_status=\K\w+' $GITHUB_STATE)
-          echo "Build Status: $build_status"
-          echo "Test Status: $test_status"
+          build_status=$(echo "${{ needs.build.outputs.var2 }}")
+          test_status=$(echo "${{ needs.test.outputs.var1 }}")
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
           else
