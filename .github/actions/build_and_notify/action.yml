@@ -20,7 +20,6 @@ runs:
       id: commit_info
       run: |
         COMMIT_HASH=$(git rev-parse HEAD)
-        # BRANCH_NAME=$(git ls-remote --heads https://gitenterprise.xilinx.com/FaaSApps/VAI-ML.git | grep -w "refs/heads/dev" | grep -vw "dev-ci-test" | awk '{print $2}' | awk -F '/' '{print $NF}')
         BRANCH_NAME=$(git ls-remote --heads https://github.com/sreeharsha-alluri/Updated_GHA_Notifications.git)
         echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
         echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
@@ -61,7 +60,6 @@ runs:
         
         # Get the commit information from environment variables
         COMMIT_HASH="${GITHUB_SHA}" 
-        # BRANCH_NAME=$(git ls-remote --heads https://gitenterprise.xilinx.com/FaaSApps/VAI-ML.git | grep -w "refs/heads/dev" | grep -vw "dev-ci-test" | awk '{print $2}' | awk -F '/' '{print $NF}')
         BRANCH_NAME=$(git ls-remote --heads https://github.com/sreeharsha-alluri/Updated_GHA_Notifications.git)
         BRANCH_NAME=$BRANCH_NAME
         
