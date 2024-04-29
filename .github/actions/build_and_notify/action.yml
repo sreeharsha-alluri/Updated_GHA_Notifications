@@ -42,7 +42,6 @@ runs:
       run: |
         # Extract overall status from input
         STATUS="${{ inputs.overall-status }}"
-        echo "Overall Status received: $STATUS"
         
         # Determine the color and mentioned ID/Name based on status
         if [ "$STATUS" == "FAIL" ]; then
