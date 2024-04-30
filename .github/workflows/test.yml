@@ -23,7 +23,7 @@ jobs:
       - name: Save build status
         id: save_build_status
         if: always()
-        run: echo "var2=${{ job.status }}" >> status.txt
+        run: echo "var2=${{ job.status }}" > status.txt
 
   test:
     name: Test
@@ -56,11 +56,15 @@ jobs:
       - name: Set Overall Status
         id: set_overall_status
         run: |
-          build_status=$(cat status.txt | grep "var2" | cut -d "=" -f 2)
-          test_status=$(cat status.txt | grep "var1" | cut -d "=" -f 2)
-          overall_status="fail"
-          if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
-            overall_status="pass"
+          if [ -f status.txt ]; then
+            build_status=$(grep -o "var2=[^ ]*" status.txt | cut -d "=" -f 2)
+            test_status=$(grep -o "var1=[^ ]*" status.txt | cut -d "=" -f 2)
+            overall_status="fail"
+            if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
+              overall_status="pass"
+            fi
+            echo "Overall Status: $overall_status"
+            echo "::set-output name=overall-status::$overall_status"
+          else
+            echo "status.txt not found."
           fi
-          echo "Overall Status: $overall_status"
-          echo "::set-output name=overall-status::$overall_status"
