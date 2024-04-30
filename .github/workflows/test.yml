@@ -59,10 +59,10 @@ jobs:
           # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
-            echo "status=pass" >> $GITHUB_ENV
+            echo "::set-env name=OVERALL_STATUS::pass"
           else
             echo "Overall Status: fail"
-            echo "status=fail" >> $GITHUB_ENV
+            echo "::set-env name=OVERALL_STATUS::fail"
           fi
 
   run_composite_action:
@@ -70,13 +70,8 @@ jobs:
     if: always()
     needs: [overall_status]
     runs-on: ubuntu-latest
-    env:
-      OVERALL_STATUS: '' # Initialize the environment variable
 
     steps:
-      - name: Set Overall Status as Environment Variable
-        run: echo "OVERALL_STATUS=${{ env.status }}" >> $GITHUB_ENV
-
       - name: Checkout code
         uses: actions/checkout@v2
 
