@@ -13,10 +13,10 @@ runs:
   using: 'composite'
   steps:
     - name: Extract overall status from input
-      shell: bash
       run: |
         STATUS="${{ inputs.overall-status }}"
         echo "Overall Status: $STATUS"
+      shell: bash
         
     - name: Checkout code
       uses: actions/checkout@v2
