@@ -58,11 +58,11 @@ jobs:
           test_status=$(echo "${{ needs.test.outputs.var1 }}")
           # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
-            echo "Overall Status: pass"
-            echo "::set-env name=OVERALL_STATUS::pass"
+            echo "Overall Status: pass" >> $GITHUB_ENV
+            echo "status=pass" >> $GITHUB_ENV
           else
-            echo "Overall Status: fail"
-            echo "::set-env name=OVERALL_STATUS::fail"
+            echo "Overall Status: fail" >> $GITHUB_ENV
+            echo "status=fail" >> $GITHUB_ENV
           fi
 
   run_composite_action:
@@ -79,4 +79,4 @@ jobs:
         uses: ./.github/actions/build_and_notify
         with:
           action-name: ${{ github.workflow }}
-          overall-status: ${{ env.OVERALL_STATUS }}
+          overall-status: ${{ env.status }}
