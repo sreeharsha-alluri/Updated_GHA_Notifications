@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Build
-        run: echo "Building..."
+        run: echo "Building"
       
       - name: Save build status
         id: save_build_status
@@ -36,7 +36,7 @@ jobs:
       
       - name: Test
         run: |
-          echo "Testing..."
+          echo "Testing"
           exit 1
       
       - name: Save test status
