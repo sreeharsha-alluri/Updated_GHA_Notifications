@@ -17,7 +17,7 @@ runs:
         STATUS="${{ inputs.overall-status }}"
         echo "Overall Status: $STATUS"
       shell: bash
-        
+
     - name: Checkout code
       uses: actions/checkout@v2
 
@@ -45,9 +45,6 @@ runs:
     - name: Determine job status
       shell: bash
       run: |
-        # Extract overall status from input
-        STATUS="${{ inputs.overall-status }}"
-        
         # Determine the color and mentioned ID/Name based on status
         if [ "$STATUS" == "FAIL" ]; then
           status="FAIL ❌"
