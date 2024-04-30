@@ -61,8 +61,8 @@ jobs:
           # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
-            echo "::set-output name=overall-status::pass" # Set overall status as an output
+            echo "overall-status=pass" >> $GITHUB_ENV
           else
             echo "Overall Status: fail"
-            echo "::set-output name=overall-status::fail" # Set overall status as an output
+            echo "overall-status=fail" >> $GITHUB_ENV
           fi
