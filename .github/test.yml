@@ -18,12 +18,12 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Build
-        run: echo "Building"
+        run: echo "Building..."
       
       - name: Save build status
         id: save_build_status
         if: always()
-        run: echo "var2=${{ job.status }}" >> $GITHUB_ENV
+        run: echo "var2=${{ job.status }}" >> $GITHUB_STATE
 
   test:
     name: Test
@@ -36,50 +36,31 @@ jobs:
       
       - name: Test
         run: |
-          echo "Testing"
+          echo "Testing..."
           exit 1
       
       - name: Save test status
         id: save_test_status
         if: always()
-        run: echo "var1=${{ job.status }}" >> $GITHUB_ENV
+        run: echo "var1=${{ job.status }}" >> $GITHUB_STATE
 
   overall_status:
     name: Determine Overall Status
     runs-on: ubuntu-latest
     needs: [build, test]
     if: always()
-    outputs:
-      overall-status: ${{ needs.overall_status.outputs.overall-status }}
 
     steps:
       - name: Set Overall Status
         id: set_overall_status
         run: |
-          build_status="${{ needs.build.outputs.var2 }}"
-          test_status="${{ needs.test.outputs.var1 }}"
+          build_status=$(echo "${{ needs.build.outputs.var2 }}")
+          test_status=$(echo "${{ needs.test.outputs.var1 }}")
           # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
-            echo "::set-output name=overall-status::pass"
-            echo "Overall Status: pass" >> $GITHUB_ENV
+            echo "status=pass" >> $GITHUB_ENV
           else
             echo "Overall Status: fail"
-            echo "::set-output name=overall-status::fail"
-            echo "Overall Status: fail" >> $GITHUB_ENV
+            echo "status=fail" >> $GITHUB_ENV
           fi
-
-  run_composite_action:
-    name: Run the Composite Action
-    if: always()
-    needs: [overall_status]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      
-      - name: Run the Composite Action
-        uses: ./.github/actions/build_and_notify
-        with:
-          action-name: ${{ github.workflow }}
-          overall-status: ${{ needs.overall_status.outputs.overall-status }}
