@@ -36,8 +36,6 @@ runs:
     - name: Determine job status
       shell: bash
       run: |
-        # Read overall status from status.txt
-        STATUS=$(grep -Po 'Overall Status: *\K[^"]*' status.txt)
         # Determine overall status based on input
         STATUS="${{ inputs.overall-status }}"
         echo "Overall Status: $STATUS"
