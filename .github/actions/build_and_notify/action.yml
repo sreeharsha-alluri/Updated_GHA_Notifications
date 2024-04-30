@@ -18,7 +18,7 @@ runs:
       run: |
         echo "Overall Status: ${{ env.OVERALL_STATUS }}"
       shell: bash
-        
+
     - name: Checkout code
       uses: actions/checkout@v2
 
