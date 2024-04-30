@@ -14,14 +14,13 @@ runs:
       uses: actions/checkout@v2
 
     - name: Get commit information
-    - name: Determine job status and set overall status
       shell: bash
-      id: commit_info
       run: |
         COMMIT_HASH=$(git rev-parse HEAD)
         BRANCH_NAME=$(git ls-remote --heads https://github.com/sreeharsha-alluri/Updated_GHA_Notifications.git)
         echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
         echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+
     - name: Extract values from configuration
       shell: bash
       run: |
@@ -33,6 +32,7 @@ runs:
         echo "ERROR_MENTION_NAME=${ERROR_MENTION_NAME}" >> $GITHUB_ENV
         echo "SUCCESS_MENTION_ID=${SUCCESS_MENTION_ID}" >> $GITHUB_ENV
         echo "SUCCESS_MENTION_NAME=${SUCCESS_MENTION_NAME}" >> $GITHUB_ENV
+
     - name: Determine job status
       shell: bash
       run: |
