@@ -14,8 +14,7 @@ runs:
   steps:
     - name: Extract overall status from input
       run: |
-        STATUS="${{ inputs.overall-status }}"
-        echo "Overall Status: $STATUS"
+        echo "Overall Status: ${{ inputs.overall-status }}"
       shell: bash
         
     - name: Checkout code
