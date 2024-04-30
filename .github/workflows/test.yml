@@ -29,6 +29,7 @@ jobs:
     steps:
       - name: Test
         run: echo "Testing..."
+         exit 1
       
       - name: Save test status
         if: always()
