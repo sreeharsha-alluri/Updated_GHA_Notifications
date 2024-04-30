@@ -74,13 +74,14 @@ jobs:
       OVERALL_STATUS: '' # Initialize the environment variable
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Set Overall Status as Environment Variable
         run: echo "OVERALL_STATUS=${{ env.status }}" >> $GITHUB_ENV
+
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Run the Composite Action
         uses: ./.github/actions/build_and_notify
         with:
           action-name: ${{ github.workflow }}
+          overall-status: ${{ env.OVERALL_STATUS }}
