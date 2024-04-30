@@ -23,7 +23,7 @@ jobs:
       - name: Save build status
         id: save_build_status
         if: always()
-        run: echo "var2=${{ job.status }}" >> status.txt
+        run: echo "var2=${{ job.status }}" >> $GITHUB_STATE
 
   test:
     name: Test
@@ -42,15 +42,13 @@ jobs:
       - name: Save test status
         id: save_test_status
         if: always()
-        run: echo "var1=${{ job.status }}" >> status.txt
+        run: echo "var1=${{ job.status }}" >> $GITHUB_STATE
 
   overall_status:
     name: Determine Overall Status
     runs-on: ubuntu-latest
     needs: [build, test]
     if: always()
-    outputs:
-      overall-status: ${{ needs.overall_status.outputs.overall-status }} # Pass overall status as an output
 
     steps:
       - name: Set Overall Status
@@ -61,31 +59,8 @@ jobs:
           # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
-            echo "::set-output name=overall-status::pass" # Set overall status as an output
+            echo "status=pass" >> $GITHUB_ENV
           else
             echo "Overall Status: fail"
-            echo "::set-output name=overall-status::fail" # Set overall status as an output
+            echo "status=fail" >> $GITHUB_ENV
           fi
-  save_overall_status:
-    name: Save Overall Status
-    if: always()
-    needs: [overall_status]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Save Overall Status
-        run: |
-          echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}" >> status.txt
-  run_composite_action:
-    name: Run the Composite Action
-    if: always()
-    needs: [overall_status]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      
-      - name: Run the Composite Action
-        uses: ./.github/actions/build_and_notify
-        with:
-          action-name: ${{ github.workflow }}
-          overall-status: ${{ needs.overall_status.outputs.overall-status }} # Pass overall status here
