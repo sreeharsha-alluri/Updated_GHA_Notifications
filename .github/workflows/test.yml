@@ -40,10 +40,10 @@ jobs:
     name: Determine Overall Status
     runs-on: ubuntu-latest
     needs: [build, test]
+    if: always()
 
     steps:
       - name: Check Status
-        if: always()
         id: check_status
         run: |
           if grep -q "build_status=failure" $GITHUB_STATE || grep -q "test_status=failure" $GITHUB_STATE; then
