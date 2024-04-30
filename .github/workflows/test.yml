@@ -50,7 +50,7 @@ jobs:
     needs: [build, test]
     if: always()
     outputs:
-      overall-status: ${{ needs.overall_status.outputs.overall-status }}
+      overall-status: ${{ needs.test.outputs.var1 }}
 
     steps:
       - name: Set Overall Status
