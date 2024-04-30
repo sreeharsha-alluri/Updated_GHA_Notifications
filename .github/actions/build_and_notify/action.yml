@@ -1,5 +1,5 @@
 description: 'Composite action for building and notifying'
- 
+
 inputs:
   action-name:
     description: 'Name for the action'
