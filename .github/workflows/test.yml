@@ -50,7 +50,7 @@ jobs:
     needs: [build, test]
     if: always()
     outputs:
-      overall_status: ${{ needs.overall_status.outputs.overall_status }}
+      overall-status: ${{ needs.overall_status.outputs.overall-status }}
 
     steps:
       - name: Set Overall Status
@@ -61,10 +61,10 @@ jobs:
           # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
-            echo "::set-output name=overall_status::pass"
+            echo "::set-output name=overall-status::pass"
           else
             echo "Overall Status: fail"
-            echo "::set-output name=overall_status::fail"
+            echo "::set-output name=overall-status::fail"
           fi
 
   run_composite_action:
@@ -80,4 +80,4 @@ jobs:
         uses: ./.github/actions/build_and_notify
         with:
           action-name: ${{ github.workflow }}
-          overall-status: ${{ needs.overall_status.outputs.overall_status }}
+          overall-status: ${{ needs.overall_status.outputs.overall-status }}
