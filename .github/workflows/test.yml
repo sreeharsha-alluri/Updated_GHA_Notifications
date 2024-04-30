@@ -20,10 +20,10 @@ jobs:
       - name: Build
         run: echo "Building..."
       
-      - name: Set build status
-        id: set_build_status
+      - name: Save build status
+        id: save_build_status
         if: always()
-        run: echo "::set-env name=BUILD_STATUS::${{ job.status }}"
+        run: echo "var2=${{ job.status }}" >> status.txt
 
   test:
     name: Test
@@ -39,25 +39,39 @@ jobs:
           echo "Testing..."
           exit 1
       
-      - name: Set test status
-        id: set_test_status
+      - name: Save test status
+        id: save_test_status
         if: always()
-        run: echo "::set-env name=TEST_STATUS::${{ job.status }}"
+        run: echo "var1=${{ job.status }}" >> status.txt
 
   overall_status:
     name: Determine Overall Status
     runs-on: ubuntu-latest
     needs: [build, test]
     if: always()
+    outputs:
+      overall-status: ${{ needs.overall_status.outputs.overall-status }} # Pass overall status as an output
+
     steps:
       - name: Set Overall Status
         id: set_overall_status
         run: |
-          build_status="${{ env.BUILD_STATUS }}"
-          test_status="${{ env.TEST_STATUS }}"
-          overall_status="fail"
+          build_status=$(echo "${{ needs.build.outputs.var2 }}")
+          test_status=$(echo "${{ needs.test.outputs.var1 }}")
+          # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
-            overall_status="pass"
+            echo "Overall Status: pass"
+            echo "::set-output name=overall-status::pass" # Set overall status as an output
+          else
+            echo "Overall Status: fail"
+            echo "::set-output name=overall-status::fail" # Set overall status as an output
           fi
-          echo "$overall_status" > overall_status.txt
-          echo "::set-output name=overall-status::$overall_status"
+  save_overall_status:
+    name: Save Overall Status
+    if: always()
+    needs: [overall_status]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Save Overall Status
+        run: |
+          echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}" >> status.txt
