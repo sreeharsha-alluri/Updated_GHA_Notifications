@@ -1,5 +1,4 @@
 description: 'Composite action for building and notifying'
-
 inputs:
   action-name:
     description: 'Name for the action'
@@ -8,16 +7,37 @@ inputs:
   overall-status:
     description: 'Overall status of the workflow'
     required: true
-
 runs:
   using: 'composite'
   steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Get commit information
     - name: Determine job status and set overall status
       shell: bash
+      id: commit_info
       run: |
+        COMMIT_HASH=$(git rev-parse HEAD)
+        BRANCH_NAME=$(git ls-remote --heads https://github.com/sreeharsha-alluri/Updated_GHA_Notifications.git)
+        echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
+        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+    - name: Extract values from configuration
+      shell: bash
+      run: |
+        ERROR_MENTION_ID=$(grep -Po '"ERROR_MENTION_ID": *\K"[^"]*"' .github/config.json | tr -d '"')
+        ERROR_MENTION_NAME=$(grep -Po '"ERROR_MENTION_NAME": *\K"[^"]*"' .github/config.json | tr -d '"')
+        SUCCESS_MENTION_ID=$(grep -Po '"SUCCESS_MENTION_ID": *\K"[^"]*"' .github/config.json | tr -d '"')
+        SUCCESS_MENTION_NAME=$(grep -Po '"SUCCESS_MENTION_NAME": *\K"[^"]*"' .github/config.json | tr -d '"')
+        echo "ERROR_MENTION_ID=${ERROR_MENTION_ID}" >> $GITHUB_ENV
+        echo "ERROR_MENTION_NAME=${ERROR_MENTION_NAME}" >> $GITHUB_ENV
+        echo "SUCCESS_MENTION_ID=${SUCCESS_MENTION_ID}" >> $GITHUB_ENV
+        echo "SUCCESS_MENTION_NAME=${SUCCESS_MENTION_NAME}" >> $GITHUB_ENV
+    - name: Determine job status
+      shell: bash
+      run: |
+        # Read overall status from status.txt
+        STATUS=$(grep -Po 'Overall Status: *\K[^"]*' status.txt)
         # Determine overall status based on input
         STATUS="${{ inputs.overall-status }}"
         echo "Overall Status: $STATUS"
@@ -34,7 +54,6 @@ runs:
           mentionedId="$SUCCESS_MENTION_ID"
           mentionedName="$SUCCESS_MENTION_NAME"
         fi
-
         # Get the GitHub workflow run URL
         JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         
