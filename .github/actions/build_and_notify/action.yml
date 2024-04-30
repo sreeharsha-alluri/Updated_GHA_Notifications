@@ -1,6 +1,5 @@
 description: 'Composite action for building and notifying'
 
-
 inputs:
   action-name:
     description: 'Name for the action'
@@ -12,46 +11,19 @@ inputs:
 
 runs:
   using: 'composite'
-  env:
-    OVERALL_STATUS: ${{ inputs.overall-status }}
   steps:
-    - name: Extract overall status from input
-      run: |
-        echo "Overall Status: ${{ env.OVERALL_STATUS }}"
-      shell: bash
-
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Get commit information
-      shell: bash
-      id: commit_info
-      run: |
-        COMMIT_HASH=$(git rev-parse HEAD)
-        BRANCH_NAME=$(git ls-remote --heads https://github.com/sreeharsha-alluri/Updated_GHA_Notifications.git)
-        echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
-        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
-
-    - name: Extract values from configuration
+    - name: Determine job status and set overall status
       shell: bash
       run: |
-        ERROR_MENTION_ID=$(grep -Po '"ERROR_MENTION_ID": *\K"[^"]*"' .github/config.json | tr -d '"')
-        ERROR_MENTION_NAME=$(grep -Po '"ERROR_MENTION_NAME": *\K"[^"]*"' .github/config.json | tr -d '"')
-        SUCCESS_MENTION_ID=$(grep -Po '"SUCCESS_MENTION_ID": *\K"[^"]*"' .github/config.json | tr -d '"')
-        SUCCESS_MENTION_NAME=$(grep -Po '"SUCCESS_MENTION_NAME": *\K"[^"]*"' .github/config.json | tr -d '"')
-        echo "ERROR_MENTION_ID=${ERROR_MENTION_ID}" >> $GITHUB_ENV
-        echo "ERROR_MENTION_NAME=${ERROR_MENTION_NAME}" >> $GITHUB_ENV
-        echo "SUCCESS_MENTION_ID=${SUCCESS_MENTION_ID}" >> $GITHUB_ENV
-        echo "SUCCESS_MENTION_NAME=${SUCCESS_MENTION_NAME}" >> $GITHUB_ENV
-
-    - name: Determine job status
-      shell: bash
-      run: |
-        # Extract overall status from input
+        # Determine overall status based on input
         STATUS="${{ inputs.overall-status }}"
+        echo "Overall Status: $STATUS"
         
         # Determine the color and mentioned ID/Name based on status
-        if [ "$STATUS" == "FAIL" ]; then
+        if [ "$STATUS" == "fail" ]; then
           status="FAIL ❌"
           color="attention"
           mentionedId="$ERROR_MENTION_ID"
