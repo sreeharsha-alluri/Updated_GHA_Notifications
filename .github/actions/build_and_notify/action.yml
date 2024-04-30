@@ -11,10 +11,12 @@ inputs:
 
 runs:
   using: 'composite'
+  env:
+    OVERALL_STATUS: ${{ inputs.overall-status }}
   steps:
     - name: Extract overall status from input
       run: |
-        echo "Overall Status: ${{ inputs.overall-status }}"
+        echo "Overall Status: ${{ env.OVERALL_STATUS }}"
       shell: bash
         
     - name: Checkout code
