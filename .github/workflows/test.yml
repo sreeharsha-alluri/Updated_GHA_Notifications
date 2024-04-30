@@ -49,8 +49,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, test]
     if: always()
-    outputs:
-      overall-status: ${{ needs.overall_status.outputs.overall-status }} # Pass overall status as an output
 
     steps:
       - name: Set Overall Status
@@ -61,8 +59,8 @@ jobs:
           # Check if both build and test were successful
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
-            echo "overall-status=pass" >> $GITHUB_ENV
+            echo "status=pass" >> $GITHUB_ENV
           else
             echo "Overall Status: fail"
-            echo "overall-status=fail" >> $GITHUB_ENV
+            echo "status=fail" >> $GITHUB_ENV
           fi
