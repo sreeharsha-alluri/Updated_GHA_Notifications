@@ -73,6 +73,7 @@ save_overall_status:
     steps:
       - name: Save Overall Status
         run: |
+          pwd
           echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}" >> status.txt
   run_composite_action:
     name: Run the Composite Action
