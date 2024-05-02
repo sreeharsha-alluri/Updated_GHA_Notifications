@@ -60,21 +60,12 @@ jobs:
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
             echo "status=pass" >> $GITHUB_ENV
+            echo "Overall Status: pass" >> status.txt
           else
             echo "Overall Status: fail"
             echo "status=fail" >> $GITHUB_ENV
+            echo "Overall Status: fail" >> status.txt
           fi
-
-  save_overall_status:
-    name: Save Overall Status
-    if: always()
-    needs: [overall_status]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Save Overall Status
-        run: |
-          pwd
-          echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}" >> status.txt
 
 # Run the Composite Action
 # Uncomment if needed
