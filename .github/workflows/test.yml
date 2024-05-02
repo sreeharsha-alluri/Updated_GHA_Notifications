@@ -8,7 +8,6 @@ on:
     branches:
       - main
 
-
 jobs:
   build:
     name: Build
@@ -65,22 +64,32 @@ jobs:
             echo "Overall Status: fail"
             echo "status=fail" >> $GITHUB_ENV
           fi
-  run_composite_action:
-    name: Run the Composite Action
-    if: always()
-    needs: [overall_status]
-    runs-on: ubuntu-latest
-    env:
-      OVERALL_STATUS: '' # Initialize the environment variable
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+# Save overall status to a file
+save_overall_status:
+  name: Save Overall Status
+  if: always()
+  needs: [overall_status]
+  runs-on: ubuntu-latest
+  steps:
+    - name: Save Overall Status
+      run: |
+        pwd
+        echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}" >> status.txt
 
-      - name: Set Overall Status as Environment Variable
-        run: echo "OVERALL_STATUS=${{ env.status }}" >> $GITHUB_ENV
-
-      - name: Run the Composite Action
-        uses: ./.github/actions/build_and_notify
-        with:
-          action-name: ${{ github.workflow }}
+# Run the Composite Action
+# Commented out as it's not included in this snippet
+# run_composite_action:
+#   name: Run the Composite Action
+#   if: always()
+#   needs: [overall_status]
+#   runs-on: ubuntu-latest
+#   steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v2
+#     
+#     - name: Run the Composite Action
+#       uses: ./.github/actions/build_and_notify
+#       with:
+#         action-name: ${{ github.workflow }}
+#         overall-status: ${{ needs.overall_status.outputs.overall-status }} # Pass overall status here
