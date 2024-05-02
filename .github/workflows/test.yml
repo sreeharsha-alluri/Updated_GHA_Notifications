@@ -59,30 +59,19 @@ jobs:
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
             echo "status=pass" >> $GITHUB_ENV
+            echo "Overall Status: pass" >> status.txt
+            echo "::set-output name=status_file_path::$(pwd)/status.txt"  # Pass the path as output
           else
             echo "Overall Status: fail"
             echo "status=fail" >> $GITHUB_ENV
+            echo "Overall Status: fail" >> status.txt
+            echo "::set-output name=status_file_path::$(pwd)/status.txt"  # Pass the path as output
           fi
-
-  save_overall_status:
-    name: Save Overall Status
-    if: always()
-    needs: [overall_status]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ensure directory exists
-        run: mkdir -p $HOME/build_status
-      - name: Save Overall Status
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Contents of status.txt:"
-          cat $HOME/build_status/status.txt || echo "status.txt not found"
-          echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}" >> $HOME/build_status/status.txt
 
   run_composite_action:
     name: Run the Composite Action
     if: always()
-    needs: [save_overall_status]
+    needs: [overall_status]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -91,11 +80,14 @@ jobs:
       - name: Read status.txt
         id: read_status
         run: |
-          status=$(cat $HOME/build_status/status.txt)
+          status_file_path="${{ needs.overall_status.outputs.status_file_path }}"
+          echo "Reading status file from: $status_file_path"
+          status=$(cat "$status_file_path")
           echo "::set-output name=status::$status"
       
       - name: Run the Composite Action
         uses: ./.github/actions/build_and_notify
         with:
           action-name: ${{ github.workflow }}
-          overall-status: ${{ steps.read_status.outputs.status }}
+          overall-status: ${{ needs.overall_status.outputs.overall-status }}
+          status-file: ${{ steps.read_status.outputs.status }}
