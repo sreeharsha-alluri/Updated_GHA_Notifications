@@ -70,14 +70,14 @@ jobs:
     needs: [overall_status]
     runs-on: ubuntu-latest
     steps:
-      - name: Ensure status.txt file exists
-        run: touch status.txt
+      - name: Ensure directory exists
+        run: mkdir -p $HOME/build_status
       - name: Save Overall Status
         run: |
           echo "Current directory: $(pwd)"
           echo "Contents of status.txt:"
-          cat status.txt
-          echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}" >> status.txt
+          cat $HOME/build_status/status.txt || echo "status.txt not found"
+          echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}" >> $HOME/build_status/status.txt
 
   run_composite_action:
     name: Run the Composite Action
@@ -91,7 +91,7 @@ jobs:
       - name: Read status.txt
         id: read_status
         run: |
-          status=$(cat status.txt)
+          status=$(cat $HOME/build_status/status.txt)
           echo "::set-output name=status::$status"
       
       - name: Run the Composite Action
