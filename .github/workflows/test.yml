@@ -16,10 +16,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
+
       - name: Build
         run: echo "Building..."
-      
+
       - name: Save build status
         id: save_build_status
         if: always()
@@ -33,12 +33,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
+
       - name: Test
         run: |
           echo "Testing..."
           exit 1
-      
+
       - name: Save test status
         id: save_test_status
         if: always()
@@ -60,12 +60,15 @@ jobs:
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
             echo "status=pass" >> $GITHUB_ENV
+            pwd  # Check current directory
             echo "Overall Status: pass" >> status.txt
           else
             echo "Overall Status: fail"
             echo "status=fail" >> $GITHUB_ENV
+            pwd  # Check current directory
             echo "Overall Status: fail" >> status.txt
           fi
+
 # Run the Composite Action
 # Uncomment if needed
 #   run_composite_action:
