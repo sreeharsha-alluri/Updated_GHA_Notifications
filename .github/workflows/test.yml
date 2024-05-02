@@ -70,12 +70,13 @@ jobs:
     needs: [overall_status]
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure status.txt file exists
+        run: touch status.txt
       - name: Save Overall Status
         run: |
           echo "Current directory: $(pwd)"
           echo "Contents of status.txt:"
           cat status.txt
-          pwd
           echo "Overall Status: ${{ needs.overall_status.outputs.overall-status }}" >> status.txt
 
   run_composite_action:
