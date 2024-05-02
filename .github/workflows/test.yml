@@ -62,11 +62,13 @@ jobs:
             echo "status=pass" >> $GITHUB_ENV
             pwd  # Check current directory
             echo "Overall Status: pass" >> status.txt
+            cat status.txt
           else
             echo "Overall Status: fail"
             echo "status=fail" >> $GITHUB_ENV
             pwd  # Check current directory
             echo "Overall Status: fail" >> status.txt
+            cat status.txt
           fi
 
 # Run the Composite Action
