@@ -37,7 +37,7 @@ runs:
       shell: bash
       run: |
         # Determine overall status based on input
-        STATUS="${{ inputs.overall-status }}"
+        STATUS=$(<"$OVERALL_STATUS_FILE")
         echo "Overall Status: $STATUS"
         
         # Determine the color and mentioned ID/Name based on status
