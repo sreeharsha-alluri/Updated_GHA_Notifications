@@ -79,17 +79,17 @@ jobs:
         id: pass_overall_status
         run: echo "overall_status=$(cat $OVERALL_STATUS_FILE)" >> $GITHUB_ENV
 
-  # run_composite_action:
-  #   name: Run the Composite Action
-  #   if: always()
-  #   needs: [overall_status]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
+  run_composite_action:
+    name: Run the Composite Action
+    if: always()
+    needs: [overall_status]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  #     - name: Run the Composite Action
-  #       uses: ./.github/actions/build_and_notify
-  #       with:
-  #         action-name: ${{ github.workflow }}
-  #         overall-status: ${{ env.overall_status }}
+      - name: Run the Composite Action
+        uses: ./.github/actions/build_and_notify
+        with:
+          action-name: ${{ github.workflow }}
+          overall-status: ${{ env.overall_status }}
