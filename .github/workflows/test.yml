@@ -74,7 +74,6 @@ jobs:
             echo "Overall Status: fail" >> $OVERALL_STATUS_FILE
             echo "fail" > $OVERALL_STATUS_FILE  # Save overall status directly
           fi
-
       - name: Pass Overall Status to Composite Action
         id: pass_overall_status
         run: echo "overall_status=$(cat $OVERALL_STATUS_FILE)" >> $GITHUB_ENV
