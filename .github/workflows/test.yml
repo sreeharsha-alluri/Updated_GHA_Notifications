@@ -8,6 +8,11 @@ on:
     branches:
       - main
 
+env:
+  BUILD_STATUS_FILE: ${{ github.workspace }}/build_status.txt
+  TEST_STATUS_FILE: ${{ github.workspace }}/test_status.txt
+  OVERALL_STATUS_FILE: ${{ github.workspace }}/overall_status.txt
+
 jobs:
   build:
     name: Build
@@ -23,7 +28,7 @@ jobs:
       - name: Save build status
         id: save_build_status
         if: always()
-        run: echo "var2=${{ job.status }}" >> ${{ github.workspace }}/build_status.txt
+        run: echo "var2=${{ job.status }}" >> $BUILD_STATUS_FILE
 
 
   test:
@@ -43,7 +48,7 @@ jobs:
       - name: Save test status
         id: save_test_status
         if: always()
-        run: echo "var1=${{ job.status }}" >> ${{ github.workspace }}/test_status.txt
+        run: echo "var1=${{ job.status }}" >> $TEST_STATUS_FILE
 
   overall_status:
     name: Determine Overall Status
@@ -62,34 +67,13 @@ jobs:
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
             echo "status=pass" >> $GITHUB_ENV
-            echo "Overall Status: pass" >> ${{ github.workspace }}/overall_status.txt
-            echo "::set-output name=status_file_path::${{ github.workspace }}/overall_status.txt"  # Pass the path as output
-            echo "pass" > ${{ github.workspace }}/overall_status.txt  # Save overall status directly
+            echo "Overall Status: pass" >> $OVERALL_STATUS_FILE
+            echo "::set-output name=status_file_path::$OVERALL_STATUS_FILE"  # Pass the path as output
+            echo "pass" > $OVERALL_STATUS_FILE  # Save overall status directly
           else
             echo "Overall Status: fail"
             echo "status=fail" >> $GITHUB_ENV
-            echo "Overall Status: fail" >> ${{ github.workspace }}/overall_status.txt
-            echo "::set-output name=status_file_path::${{ github.workspace }}/overall_status.txt"  # Pass the path as output
-            echo "fail" > ${{ github.workspace }}/overall_status.txt  # Save overall status directly
+            echo "Overall Status: fail" >> $OVERALL_STATUS_FILE
+            echo "::set-output name=status_file_path::$OVERALL_STATUS_FILE"  # Pass the path as output
+            echo "fail" > $OVERALL_STATUS_FILE  # Save overall status directly
           fi
-
-  run_composite_action:
-    name: Run the Composite Action
-    if: always()
-    needs: [overall_status]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Read overall status
-        id: read_overall_status
-        run: |
-          overall_status=$(cat ${{ github.workspace }}/overall_status.txt)
-          echo "::set-output name=overall_status::$overall_status"  # Pass the overall status as output
-
-      - name: Run the Composite Action
-        uses: ./.github/actions/build_and_notify
-        with:
-          action-name: ${{ github.workflow }}
-          overall-status: ${{ steps.read_overall_status.outputs.overall_status }}
