@@ -36,6 +36,7 @@ runs:
     - name: Determine job status
       shell: bash
       run: |
+        echo "OVERALL_STATUS_FILE: $OVERALL_STATUS_FILE"
         # Determine overall status based on input
         STATUS=$(<"$OVERALL_STATUS_FILE")
         echo "Overall Status: $STATUS"
