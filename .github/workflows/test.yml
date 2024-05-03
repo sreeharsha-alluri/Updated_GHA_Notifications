@@ -92,4 +92,4 @@ jobs:
         uses: ./.github/actions/build_and_notify
         with:
           action-name: ${{ github.workflow }}
-          overall-status: ${{ env.status }}
+          overall-status: ${{ env.overall_status }}
