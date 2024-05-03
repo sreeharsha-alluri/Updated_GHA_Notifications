@@ -56,6 +56,8 @@ jobs:
         run: |
           build_status=$(echo "${{ needs.build.outputs.var2 }}")
           test_status=$(echo "${{ needs.test.outputs.var1 }}")
+          echo "Build Status: $build_status"
+          echo "Test Status: $test_status"
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
             echo "status=pass" >> $GITHUB_ENV
@@ -93,7 +95,6 @@ jobs:
         run: |
           status_file_path=$(cat status.txt)
           echo "::set-output name=status_file_path::$status_file_path"  # Pass the path as output
-
       - name: Run the Composite Action
         uses: ./.github/actions/build_and_notify
         with:
