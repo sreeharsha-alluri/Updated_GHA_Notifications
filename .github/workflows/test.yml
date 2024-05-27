@@ -11,11 +11,10 @@ jobs:
 
       - name: Build
         run: echo "Building"
-        runs-on: ubuntu-latest
-      
+        
       - name: Test
-        needs: [Build]
         run: echo "Testing"
+        needs: [Build]
         
       - name: Run the Composite Action
         if: always()
