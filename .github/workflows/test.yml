@@ -1,23 +1,90 @@
-name: CI Pipeline
+name: Build and Test
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build_and_test:
+  build:
+    name: Build
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Build
-        run: echo "Building"
-        
-      - name: Test
-        run: echo "Testing"
-        needs: [Build]
-        
-      - name: Run the Composite Action
+        run: echo "Building..."
+
+      - name: Save build status
+        id: save_build_status
         if: always()
-        uses: ./.github/actions/build_and_notify
-        with:
-          action-name: ${{ github.workflow }}
+        run: echo "var2=${{ job.status }}" 
+
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Test
+        run: |
+          echo "Testing..."
+          exit 1
+      
+      - name: Save test status
+        id: save_test_status
+        if: always()
+        run: echo "var1=${{ job.status }}"
+
+  overall_status:
+    name: Determine Overall Status
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    if: always()
+
+    steps:
+      - name: Set Overall Status
+        id: set_overall_status
+        run: |
+          build_status=$(echo "${{ needs.build.outputs.var2 }}")
+          test_status=$(echo "${{ needs.test.outputs.var1 }}")
+          echo "Build Status: $build_status"
+          echo "Test Status: $test_status"
+          if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
+            echo "Overall Status: pass"
+            echo "status=pass" >> $GITHUB_ENV
+            echo "Overall Status: pass" >> $OVERALL_STATUS_FILE
+            echo "pass" > $OVERALL_STATUS_FILE  # Save overall status directly
+          else
+            echo "Overall Status: fail"
+            echo "status=fail" >> $GITHUB_ENV
+            echo "Overall Status: fail" >> $OVERALL_STATUS_FILE
+            echo "fail" > $OVERALL_STATUS_FILE  # Save overall status directly
+          fi
+      - name: Pass Overall Status to Composite Action
+        id: pass_overall_status
+        run: echo "overall_status=$(cat $OVERALL_STATUS_FILE)" >> $GITHUB_ENV
+
+  # run_composite_action:
+  #   name: Run the Composite Action
+  #   if: always()
+  #   needs: [overall_status]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+
+  #     - name: Run the Composite Action
+  #       uses: ./.github/actions/build_and_notify
+  #       with:
+  #         action-name: ${{ github.workflow }}
+  #         overall-status: ${{ env.status }}
