@@ -62,11 +62,7 @@ jobs:
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
             echo "status=pass" >> $GITHUB_ENV
-            echo "Overall Status: pass" >> $OVERALL_STATUS_FILE
-            echo "pass" > $OVERALL_STATUS_FILE  # Save overall status directly
           else
             echo "Overall Status: fail"
             echo "status=fail" >> $GITHUB_ENV
-            echo "Overall Status: fail" >> $OVERALL_STATUS_FILE
-            echo "fail" > $OVERALL_STATUS_FILE  # Save overall status directly
           fi
