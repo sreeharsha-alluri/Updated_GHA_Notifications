@@ -65,10 +65,13 @@ jobs:
           echo "Test Status: $test_status"
           
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
-            echo "overall_status=pass" >> $GITHUB_OUTPUT
+            overall_status="pass"
           else
-            echo "overall_status=fail" >> $GITHUB_OUTPUT
+            overall_status="fail"
           fi
+
+          echo "Overall Status: $overall_status"
+          echo "overall_status=$overall_status" >> $GITHUB_OUTPUT
 
   notify:
     name: Notify
