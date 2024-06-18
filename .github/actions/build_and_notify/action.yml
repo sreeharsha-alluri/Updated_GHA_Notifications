@@ -3,7 +3,7 @@ inputs:
   action-name:
     description: 'Name for the action'
     required: true
-    default: 'Composite Action' # Provide a default value if needed
+    default: 'Composite Action'
   overall-status:
     description: 'Overall status of the workflow'
     required: true
@@ -17,7 +17,7 @@ runs:
       shell: bash
       run: |
         COMMIT_HASH=$(git rev-parse HEAD)
-        BRANCH_NAME=$(git ls-remote --heads https://github.com/sreeharsha-alluri/Updated_GHA_Notifications.git)
+        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
         echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
         echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
 
@@ -36,8 +36,8 @@ runs:
     - name: Determine job status
       shell: bash
       run: |
-        echo "OVERALL_STATUS_FILE: ${{ inputs.overall-status }}"
-        STATUS=$(<"${{ inputs.overall-status }}")
+        echo "OVERALL_STATUS: ${{ inputs.overall-status }}"
+        STATUS=${{ inputs.overall-status }}
         echo "Overall Status: $STATUS"
         
         if [ "$STATUS" == "fail" ]; then
@@ -54,8 +54,7 @@ runs:
         
         JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         COMMIT_HASH="${GITHUB_SHA}" 
-        BRANCH_NAME=$(git ls-remote --heads https://github.com/sreeharsha-alluri/Updated_GHA_Notifications.git)
-        BRANCH_NAME=$BRANCH_NAME
+        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
         REPO_URL="[${{ github.repository }}](${{ github.event.repository.html_url }})"
         BUILD_NUMBER="${{ github.run_number }}"
         
