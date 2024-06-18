@@ -52,6 +52,7 @@ jobs:
           echo "Build Status: $build_status"
           echo "Test Status: $test_status"
 
+          # Determine overall status based on build_status and test_status
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
             echo "Overall Status: pass"
             echo "status=pass" >> $GITHUB_ENV
@@ -62,6 +63,7 @@ jobs:
             STATUS="fail"
           fi
 
+          # Prepare payload for Microsoft Teams notification
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           COMMIT_HASH="${GITHUB_SHA}" 
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
@@ -80,6 +82,7 @@ jobs:
             mentionedName="$SUCCESS_MENTION_NAME"
           fi
 
+          # Construct payload
           payload='{
             "type": "message",
             "attachments": [
@@ -146,4 +149,5 @@ jobs:
             ]
           }'
 
+          # Send payload to Microsoft Teams webhook
           echo "$payload" | curl -X POST -H 'Content-Type: application/json' -d @- 'https://amdcloud.webhook.office.com/webhookb2/133d4f16-689b-4281-a94b-44725b948c77@3dd8961f-e488-4e60-8e11-a82d994e183d/IncomingWebhook/20c43fc799fd49e9813582813c638323/f9e22351-f1c9-494f-88c5-8e04accf2ffe'
