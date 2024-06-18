@@ -66,6 +66,9 @@ jobs:
             echo "status=fail" >> $GITHUB_ENV
           fi
 
+      - name: Save Overall Status
+        run: echo "status=${{ env.status }}" >> $GITHUB_ENV
+
   notify:
     name: Notify
     if: always()
