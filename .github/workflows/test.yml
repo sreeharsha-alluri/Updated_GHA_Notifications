@@ -1,5 +1,5 @@
----
 name: Build and Test
+
 on:
   push:
     branches:
@@ -7,70 +7,80 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Build
         run: echo "Building..."
+
       - name: Save build status
         id: save_build_status
-        if: always()
-        run: echo "::set-output name=build_status::${{ job.status }}"
+        if: always()  # Always save build status
+        run: echo "build_status=${{ job.status }}" >> $GITHUB_OUTPUT
+    outputs:
+      build_status: ${{ steps.save_build_status.outputs.build_status }}
+
   test:
     name: Test
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Test
         run: |
           echo "Testing..."
           exit 1  # Simulating a failure for demonstration
       - name: Save test status
         id: save_test_status
-        if: always()
-        run: echo "::set-output name=test_status::${{ job.status }}"
+        if: always()  # Always save test status
+        run: echo "test_status=${{ job.status }}" >> $GITHUB_OUTPUT
+    outputs:
+      test_status: ${{ steps.save_test_status.outputs.test_status }}
+
   overall_status:
     name: Determine Overall Status
     runs-on: ubuntu-latest
-    needs:
-      - build
-      - test
-    if: always()
+    needs: [build, test]
+    if: always()  # Always run this job
+
     steps:
       - name: Set Overall Status
         id: set_overall_status
-        run: >
+        run: |
           build_status="${{ needs.build.outputs.build_status }}"
-
           test_status="${{ needs.test.outputs.test_status }}"
-
           echo "Build Status: $build_status"
-
           echo "Test Status: $test_status"
-
-
+          
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
-            echo "Overall Status: pass"
-            echo "::set-output name=overall_status::pass"
+            echo "overall_status=pass" >> $GITHUB_OUTPUT
           else
-            echo "Overall Status: fail"
-            echo "::set-output name=overall_status::fail"
+            echo "overall_status=fail" >> $GITHUB_OUTPUT
+    outputs:
+      overall_status: ${{ steps.set_overall_status.outputs.overall_status }}
+
   notify:
     name: Notify
     if: always()
     runs-on: ubuntu-latest
-    needs: overall_status
+    needs: overall_status  # Wait for overall_status job to complete
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Send Notifications
         uses: ./.github/actions/build_and_notify
         with:
           action-name: Build and Test Notification
-          overall-status: ${{ needs.overall_status.outputs.overall_status }}
+          overall-status: ${{ needs.overall_status.outputs.overall_status }}  # Pass the overall status to the composite action
