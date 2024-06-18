@@ -16,34 +16,24 @@ runs:
       uses: actions/checkout@v2
 
     - name: Get commit information
-      id: get_commit_info
       shell: bash
       run: |
         COMMIT_HASH=$(git rev-parse HEAD)
         BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-        echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_OUTPUT
-        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_OUTPUT
-      outputs:
-        COMMIT_HASH: ${{ steps.get_commit_info.outputs.COMMIT_HASH }}
-        BRANCH_NAME: ${{ steps.get_commit_info.outputs.BRANCH_NAME }}
+        echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
+        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
 
     - name: Extract values from configuration
-      id: extract_values
       shell: bash
       run: |
         ERROR_MENTION_ID=$(grep -Po '"ERROR_MENTION_ID": *\K"[^"]*"' .github/config.json | tr -d '"')
         ERROR_MENTION_NAME=$(grep -Po '"ERROR_MENTION_NAME": *\K"[^"]*"' .github/config.json | tr -d '"')
         SUCCESS_MENTION_ID=$(grep -Po '"SUCCESS_MENTION_ID": *\K"[^"]*"' .github/config.json | tr -d '"')
         SUCCESS_MENTION_NAME=$(grep -Po '"SUCCESS_MENTION_NAME": *\K"[^"]*"' .github/config.json | tr -d '"')
-        echo "ERROR_MENTION_ID=${ERROR_MENTION_ID}" >> $GITHUB_OUTPUT
-        echo "ERROR_MENTION_NAME=${ERROR_MENTION_NAME}" >> $GITHUB_OUTPUT
-        echo "SUCCESS_MENTION_ID=${SUCCESS_MENTION_ID}" >> $GITHUB_OUTPUT
-        echo "SUCCESS_MENTION_NAME=${SUCCESS_MENTION_NAME}" >> $GITHUB_OUTPUT
-      outputs:
-        ERROR_MENTION_ID: ${{ steps.extract_values.outputs.ERROR_MENTION_ID }}
-        ERROR_MENTION_NAME: ${{ steps.extract_values.outputs.ERROR_MENTION_NAME }}
-        SUCCESS_MENTION_ID: ${{ steps.extract_values.outputs.SUCCESS_MENTION_ID }}
-        SUCCESS_MENTION_NAME: ${{ steps.extract_values.outputs.SUCCESS_MENTION_NAME }}
+        echo "ERROR_MENTION_ID=${ERROR_MENTION_ID}" >> $GITHUB_ENV
+        echo "ERROR_MENTION_NAME=${ERROR_MENTION_NAME}" >> $GITHUB_ENV
+        echo "SUCCESS_MENTION_ID=${SUCCESS_MENTION_ID}" >> $GITHUB_ENV
+        echo "SUCCESS_MENTION_NAME=${SUCCESS_MENTION_NAME}" >> $GITHUB_ENV
 
     - name: Determine job status
       shell: bash
@@ -54,18 +44,18 @@ runs:
         if [ "$STATUS" == "fail" ]; then
           status="FAIL ❌"
           color="attention"
-          mentionedId="${{ steps.extract_values.outputs.ERROR_MENTION_ID }}"
-          mentionedName="${{ steps.extract_values.outputs.ERROR_MENTION_NAME }}"
+          mentionedId="$ERROR_MENTION_ID"
+          mentionedName="$ERROR_MENTION_NAME"
         else
           status="PASS ✅"
           color="good"
-          mentionedId="${{ steps.extract_values.outputs.SUCCESS_MENTION_ID }}"
-          mentionedName="${{ steps.extract_values.outputs.SUCCESS_MENTION_NAME }}"
+          mentionedId="$SUCCESS_MENTION_ID"
+          mentionedName="$SUCCESS_MENTION_NAME"
         fi
 
         JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        COMMIT_HASH="${{ steps.get_commit_info.outputs.COMMIT_HASH }}"
-        BRANCH_NAME="${{ steps.get_commit_info.outputs.BRANCH_NAME }}"
+        COMMIT_HASH="${GITHUB_SHA}"
+        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
         REPO_URL="[${{ github.repository }}](${{ github.event.repository.html_url }})"
         BUILD_NUMBER="${{ github.run_number }}"
 
