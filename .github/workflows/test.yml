@@ -37,7 +37,7 @@ jobs:
       - name: Test
         run: |
           echo "Testing..."
-          exit 1
+          exit 1  # Simulating a failed test for demonstration
 
       - name: Save test status
         id: save_test_status
