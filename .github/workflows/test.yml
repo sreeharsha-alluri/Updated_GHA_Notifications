@@ -80,6 +80,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Send Notifications
+        if: always()
         uses: ./.github/actions/build_and_notify
         with:
           action-name: Build and Test Notification
