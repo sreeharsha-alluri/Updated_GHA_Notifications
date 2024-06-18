@@ -54,8 +54,8 @@ jobs:
       - name: Set Overall Status
         id: set_overall_status
         run: |
-          build_status="${{ env.var2 }}"
-          test_status="${{ env.var1 }}"
+          build_status="${{ needs.build.outputs.var2 }}"
+          test_status="${{ needs.test.outputs.var1 }}"
           echo "Build Status: $build_status"
           echo "Test Status: $test_status"
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
@@ -67,6 +67,7 @@ jobs:
 
   notify:
     name: Notify
+    if: always()
     runs-on: ubuntu-latest
     needs: overall_status
     steps:
