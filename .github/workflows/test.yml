@@ -169,8 +169,8 @@ jobs:
           echo "$payload" > teams_payload.json  # Save payload to a JSON file
 
       - name: Send Microsoft Teams notification
-        run: |
         if: always()
+        run: |
           curl -X POST \
             -H 'Content-Type: application/json' \
             -d @teams_payload.json \
