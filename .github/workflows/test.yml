@@ -46,7 +46,6 @@ jobs:
 
   determine_status_and_notify:
     name: Determine Status and Notify Teams
-    if: always()
     runs-on: ubuntu-latest
     needs: [build, test]
 
@@ -54,8 +53,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Load mention IDs and names from JSON
+        run: |
+          MENTION_JSON=$(cat path/to/mention.json)
+          ERROR_MENTION_ID=$(echo "$MENTION_JSON" | jq -r .ERROR_MENTION_ID)
+          ERROR_MENTION_NAME=$(echo "$MENTION_JSON" | jq -r .ERROR_MENTION_NAME)
+          SUCCESS_MENTION_ID=$(echo "$MENTION_JSON" | jq -r .SUCCESS_MENTION_ID)
+          SUCCESS_MENTION_NAME=$(echo "$MENTION_JSON" | jq -r .SUCCESS_MENTION_NAME)
+
       - name: Set build and test statuses
-        if: always()
         run: |
           build_status="${{ env.var2 }}"
           test_status="${{ env.var1 }}"
@@ -74,21 +80,13 @@ jobs:
           fi
 
       - name: Prepare Microsoft Teams payload
-        if: always()
         run: |
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           COMMIT_HASH="${GITHUB_SHA}" 
           BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
           REPO_URL="[${{ github.repository }}](${{ github.event.repository.html_url }})"
           BUILD_NUMBER="${{ github.run_number }}"
-          
-          # Load mention IDs and names from JSON file
-          MENTION_JSON=$(cat mention.json)
-          ERROR_MENTION_ID=$(echo "$MENTION_JSON" | jq -r .ERROR_MENTION_ID)
-          ERROR_MENTION_NAME=$(echo "$MENTION_JSON" | jq -r .ERROR_MENTION_NAME)
-          SUCCESS_MENTION_ID=$(echo "$MENTION_JSON" | jq -r .SUCCESS_MENTION_ID)
-          SUCCESS_MENTION_NAME=$(echo "$MENTION_JSON" | jq -r .SUCCESS_MENTION_NAME)
-          
+
           if [ "$STATUS" == "fail" ]; then
             status="FAIL ❌"
             color="attention"
@@ -100,7 +98,7 @@ jobs:
             mentionedId="$SUCCESS_MENTION_ID"
             mentionedName="$SUCCESS_MENTION_NAME"
           fi
-          
+
           payload='{
             "type": "message",
             "attachments": [
@@ -170,7 +168,6 @@ jobs:
           echo "$payload" > teams_payload.json  # Save payload to a JSON file
 
       - name: Send Microsoft Teams notification
-        if: always()
         run: |
           curl -X POST \
             -H 'Content-Type: application/json' \
