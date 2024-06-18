@@ -54,6 +54,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set build and test statuses
+        if: always()
         run: |
           build_status="${{ env.var2 }}"
           test_status="${{ env.var1 }}"
@@ -72,6 +73,7 @@ jobs:
           fi
 
       - name: Prepare Microsoft Teams payload
+        if: always()
         run: |
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           COMMIT_HASH="${GITHUB_SHA}" 
@@ -168,6 +170,7 @@ jobs:
 
       - name: Send Microsoft Teams notification
         run: |
+        if: always()
           curl -X POST \
             -H 'Content-Type: application/json' \
             -d @teams_payload.json \
