@@ -56,7 +56,7 @@ jobs:
 
       - name: Load mention IDs and names from JSON
         run: |
-          MENTION_JSON=$(cat path/to/mention.json)
+          MENTION_JSON=$(cat .github/config.json)
           ERROR_MENTION_ID=$(echo "$MENTION_JSON" | jq -r .ERROR_MENTION_ID)
           ERROR_MENTION_NAME=$(echo "$MENTION_JSON" | jq -r .ERROR_MENTION_NAME)
           SUCCESS_MENTION_ID=$(echo "$MENTION_JSON" | jq -r .SUCCESS_MENTION_ID)
