@@ -12,6 +12,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    outputs:
+      build_status: ${{ steps.save_build_status.outputs.build_status }}
 
     steps:
       - name: Checkout code
@@ -24,13 +26,13 @@ jobs:
         id: save_build_status
         if: always()  # Always save build status
         run: echo "build_status=${{ job.status }}" >> $GITHUB_OUTPUT
-    outputs:
-      build_status: ${{ steps.save_build_status.outputs.build_status }}
 
   test:
     name: Test
     runs-on: ubuntu-latest
     needs: build
+    outputs:
+      test_status: ${{ steps.save_test_status.outputs.test_status }}
 
     steps:
       - name: Checkout code
@@ -44,14 +46,14 @@ jobs:
         id: save_test_status
         if: always()  # Always save test status
         run: echo "test_status=${{ job.status }}" >> $GITHUB_OUTPUT
-    outputs:
-      test_status: ${{ steps.save_test_status.outputs.test_status }}
 
   overall_status:
     name: Determine Overall Status
     runs-on: ubuntu-latest
     needs: [build, test]
     if: always()  # Always run this job
+    outputs:
+      overall_status: ${{ steps.set_overall_status.outputs.overall_status }}
 
     steps:
       - name: Set Overall Status
@@ -66,8 +68,7 @@ jobs:
             echo "overall_status=pass" >> $GITHUB_OUTPUT
           else
             echo "overall_status=fail" >> $GITHUB_OUTPUT
-    outputs:
-      overall_status: ${{ steps.set_overall_status.outputs.overall_status }}
+          fi
 
   notify:
     name: Notify
@@ -83,4 +84,4 @@ jobs:
         uses: ./.github/actions/build_and_notify
         with:
           action-name: Build and Test Notification
-          overall-status: ${{ needs.overall_status.outputs.overall_status }}  # Pass the overall status to the composite action
+          overall-status: ${{ needs.overall_status.outputs.overall_status }}
