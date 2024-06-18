@@ -64,7 +64,7 @@ jobs:
           else
             echo "Overall Status: fail"
             echo "status=fail" >> $GITHUB_ENV
-          fi  # This was missing
+          fi
 
   notify:
     name: Notify
