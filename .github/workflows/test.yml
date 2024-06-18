@@ -46,6 +46,7 @@ jobs:
 
   determine_status_and_notify:
     name: Determine Status and Notify Teams
+    if: always()
     runs-on: ubuntu-latest
     needs: [build, test]
 
@@ -72,6 +73,7 @@ jobs:
           fi
 
       - name: Prepare Microsoft Teams payload
+        if: always()
         run: |
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           COMMIT_HASH="${GITHUB_SHA}" 
