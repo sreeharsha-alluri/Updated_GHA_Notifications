@@ -1,6 +1,5 @@
 name: Build and Test
 
-
 on:
   push:
     branches:
@@ -43,7 +42,6 @@ jobs:
         run: |
           echo "Testing..."
           exit 1  # Simulating a failure for demonstration
-
       - name: Save test status
         id: save_test_status
         if: always()
@@ -67,14 +65,12 @@ jobs:
           echo "Test Status: $test_status"
           
           if [ "$build_status" == "success" ] && [ "$test_status" == "success" ]; then
-            overall_status="PASS"
+            overall_status="pass"
           else
-            overall_status="FAIL"
+            overall_status="fail"
           fi
-
           echo "Overall Status: $overall_status"
           echo "overall_status=$overall_status" >> $GITHUB_OUTPUT
-
   notify:
     name: Notify
     if: always()
