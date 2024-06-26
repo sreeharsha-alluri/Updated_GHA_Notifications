@@ -84,5 +84,5 @@ jobs:
       - name: Send Notifications
         uses: ./.github/actions/build_and_notify
         with:
-          action-name: Build and Test Notification
+          action-name: ${{ github.workflow }}
           overall-status: ${{ needs.overall_status.outputs.overall_status }}
