@@ -1,4 +1,4 @@
-name: Simulating Error
+name: No Error
 
 on:
   push:
@@ -38,10 +38,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Test
-        run: |
-          echo "Testing..."
-          exit 1  # Simulating a failure for demonstration
+      # - name: Test
+      #   run: |
+      #     echo "Testing..."
+      #     exit 1  # Simulating a failure for demonstration
       - name: Save test status
         id: save_test_status
         if: always()
