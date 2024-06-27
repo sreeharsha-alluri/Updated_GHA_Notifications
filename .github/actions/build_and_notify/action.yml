@@ -15,14 +15,6 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Get commit information
-      shell: bash
-      run: |
-        COMMIT_HASH=$(git rev-parse HEAD)
-        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-        echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
-        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
-
     - name: Extract values from configuration
       shell: bash
       run: |
@@ -54,8 +46,8 @@ runs:
         fi
 
         JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        COMMIT_HASH="${GITHUB_SHA}"
-        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+        COMMIT_HASH="${{ github.sha }}"
+        BRANCH_NAME="${{ github.ref_name }}"
         REPO_URL="[${{ github.repository }}](${{ github.event.repository.html_url }})"
         BUILD_NUMBER="${{ github.run_number }}"
 
